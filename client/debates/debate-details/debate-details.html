@@ -1,45 +1,22 @@
-<div layout="row" flex class="ma-debate-details">
-  <div flex="33" offset="33">
-    <legend style="margin:20px 0;">
-      Here you will see and change the details of the debate:
-    </legend>
-    <form layout="column">
-      <md-input-container>
-        <label>Debate Name</label>
-        <input ng-model="debateDetails.debate.name" ng-disabled="debateDetails.debate.owner != debateDetails.currentUserId" type="text" aria-label="Name">
-      </md-input-container>
-      <md-input-container>
-        <label>Debate Description</label>
-        <input ng-model="debateDetails.debate.description" ng-disabled="debateDetails.debate.owner != debateDetails.currentUserId" type="text" aria-label="Description">
-      </md-input-container>
-      <md-checkbox ng-model="debateDetails.debate.public" ng-disabled="debateDetails.debate.owner != debateDetails.currentUserId" aria-label="Public">
-        Is public
-      </md-checkbox>
+The debate you selected is:
+<form>
+    Debate name:
+    <input type="text" ng-model="debateDetails.debate.name" /> Description:
+    <input type="text" ng-model="debateDetails.debate.description" /> Public Party?
+    <input type="checkbox" ng-model="debateDetails.debate.public">
+    <button ng-click="debateDetails.save()">Save</button>
+</form>
+<button ui-sref="debates">Back</button>
 
-      <div layout="row" layout-align="left">
-        <md-button ng-show="debateDetails.debate.owner == debateDetails.currentUserId" ng-click="debateDetails.save()">Save</md-button>
-        <md-button ng-href="/debates">Back</md-button>
-      </div>
+<ul>
+    Users to invite:
+    <li ng-repeat="user in debateDetails.users | uninvited:debateDetails.party">
+        <div>{{ user | displayName }}</div>
+        <button ng-click="debateDetails.invite(user)">Invite</button>
 
-      <md-list ng-show="debateDetails.canInvite()">
-        <md-subheader class="md-no-sticky">Users to invite:</md-subheader>
-        <md-list-item ng-repeat="user in debateDetails.users | uninvited:debateDetails.debate">
-          <div>{{ user | displayName }}</div>
-          <md-button ng-click="debateDetails.invite(user)">Invite</md-button>
-        </md-list-item>
-        <md-list-item ng-if="(debateDetails.users | uninvited:debateDetails.party).length <= 0">
-          Everyone are already invited.
-        </md-list-item>
-      </md-list>
-
-      <!--<div class="angular-google-map-container">
-        <ui-gmap-google-map center="partyDetails.party.location || partyDetails.map.center"
-                            events="partyDetails.map.events" zoom="partyDetails.map.zoom">
-          <ui-gmap-marker coords="partyDetails.party.location" options="partyDetails.map.marker.options"
-                          events="partyDetails.map.marker.events" idkey="partyDetails.party._id">
-          </ui-gmap-marker>
-        </ui-gmap-google-map>
-      </div>-->
-    </form>
-  </div>
-</div>
+    </li>
+    Users:
+    <li ng-repeat="user in debateDetails.users">
+        <div>{{ user.emails[0].address }}</div>
+    </li>
+</ul>

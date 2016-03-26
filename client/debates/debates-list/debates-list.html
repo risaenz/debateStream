@@ -1,73 +1,39 @@
-<md-content flex layout="row" class="ma-debates-list">
-  <div layout="row" flex>
-    <div flex="50">
-      <div>
-        <div layout-padding layout="row">
-          <md-input-container style="width:50%;margin-right:10px;">
-            <label>Search</label>
-            <input type="text" ng-model="debatesList.searchText" placeholder="Search">
-          </md-input-container>
-          <md-select ng-model="debatesList.orderProperty" placeholder="Sort Order" md-on-close="debatesList.updateSort()">
-            <md-option value="1">Ascending</md-option>
-            <md-option value="-1">Descending</md-option>
-          </md-select>
-          <md-button ng-show="debatesList.isLoggedIn" class="md-fab" ng-click="debatesList.openAddNewDebateModal()">
-            <md-icon md-font-set="material-icons"> add </md-icon>
-          </md-button>
-        </div>
-      </div>
-      <md-content class="md-padding" style="padding-top:0;">
-        <dir-pagination-controls on-page-change="debatesList.pageChanged(newPageNumber)"></dir-pagination-controls>
-        <div dir-paginate="debate in debatesList.debates | itemsPerPage: debatesList.perPage" total-items="debateList.debatesCount" class="ma-party">
-          <md-card>
-            <md-card-content>
-              <h2 class="md-title ma-name" style=""><a href="/debates/{{debate._id}}">{{debate.name}}</a></h2>
-              <p class="ma-description" style="padding:0 10px;margin-bottom:35px;margin-top: 6px;">{{debate.description}}</p>
-              <div layout="row">
-                <div flex="1">
-                  <p style="margin-top:0px;margin-bottom:3px;font-size:14px;color:#aaa;">
-                    <small>Posted by {{ debatesList.getDebateCreator(debate) | displayName }}</small>
-                    <span ng-if="debate.public" style="font-size:12px;color:#999;">| Everyone can view</span>
-                  </p>
+<form ng-show="debatesList.isLoggedIn">
+    <label>Debate Name: </label>
+    <input type="text" ng-model="debatesList.newDebate.name" />
+    <label>Description: </label>
+    <input type="text" ng-model="debatesList.newDebate.description" />
+    <button ng-click="debatesList.addDebate()">Add Debate!</button>
+    <label>Public Party?</label>
+    <input type="checkbox" ng-model="debatesList.newDebate.public">
+</form>
+<h1>Debates:</h1>
+<div>
+    <input type="search" ng-model="debatesList.searchText" placeholder="Search" />
+    <select ng-model="debatesList.orderProperty" ng-change="debatesList.updateSort()">
+        <option value="1">Ascending</option>
+        <option value="-1">Descending</option>
+    </select>
+</div>
+<ul>
+    <li ui-sref="debateDetails({ debateId: debate._id })" dir-paginate="debate in debatesList.debates | itemsPerPage: debatesList.perPage"
+    total-items="debatesList.debatesCount">
+        {{debate.name}}
+        <p>{{debate.description}}</p>
+        <button ng-click="debatesList.removeDebate(debate)"
+                ng-show="debatesList.isLoggedIn && debate.owner == debatesList.currentUserId">
+                X
+        </button>
+        <div ng-show="debatesList.isLoggedIn">
 
-                  <div ng-show="debatesList.isLoggedIn" class="md-actions" layout="row">
-                    <md-button ng-click="debatesList.vote(debate._id, 'upvote')">Upvote</md-button>
-                    <md-button ng-click="debatesList.vote(debate._id, 'downvote')">Downvote</md-button>
-                    <md-button ng-click="debatesList.vote(debate._id, 'view')">View</md-button>
-                  </div>
-                </div>
-                <div  layout="row" layout-align="end end">
-                  <div ng-hide="debatesList.isLoggedIn" style="font-size:13px;margin-bottom:10px;">
-                    Sign in to upvote or downvote!
-                  </div>
-                  <div>
-                    <div class="votes-sum">
-                      <div class="votes-amount">{{ (debate.votes | filter:{vote:'upvote'}).length || "0" }}</div>
-                      <div class="votes-title">Upvotes</div>
-                    </div>
-                    <div class="votes-sum">
-                      <div class="votes-amount">{{ (debate.votes | filter:{vote:'view'}).length || "0" }}</div>
-                      <div class="votes-title">View</div>
-                    </div>
-                    <div class="votes-sum">
-                      <div class="votes-amount">{{ (debate.rsvps | filter:{vote:'downvote'}).length || "0" }}</div>
-                      <div class="votes-title">Downvotes</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </md-card-content>
-          </md-card>
+            <input type="button" value="upVote" ng-click="debatesList.vote(debate._id, 'upVote')">
+            <input type="button" value="downVote" ng-click="debatesList.vote(debate._id, 'downVote')">
         </div>
-      </md-content>
-
-    </div>
-    <!-- <div flex="50" layout="row" style="min-height:300px;">
-      <ui-gmap-google-map options="partiesList.map.options" center="partiesList.map.center" zoom="partiesList.map.zoom" flex layout="row">
-        <ui-gmap-markers models="partiesList.debates" coords="'location'"
-                         fit="true" idkey="'_id'" doRebuildAll="true">
-        </ui-gmap-markers>
-      </ui-gmap-google-map>
-    </div> -->
-  </div>
-</md-content>
+        <div>
+            upVote - {{ (debate.votes | filter:{vote:'upVote'}).length }} downVote - {{ (debate.votes | filter:{vote:'downVote'}).length
+            }}
+        </div>
+        <p><small>Posted by {{ debatesList.getDebateCreator(debate) | displayName }}</small></p>
+    </li>
+</ul>
+<dir-pagination-controls on-page-change="debatesList.pageChanged(newPageNumber)"></dir-pagination-controls>

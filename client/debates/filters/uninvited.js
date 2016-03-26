@@ -1,11 +1,11 @@
-angular.module('stream').filter('uninvited', function () {
-  return function (users, party) {
-    if (!party) {
+angular.module('debateStream').filter('uninvited', function () {
+  return function (users, debate) {
+    if (!debate) {
       return false;
     }
-
+ 
     return _.filter(users, function (user) {
-      return !(user._id == party.owner || _.contains(party.invited, user._id));
+      return !(user._id == debate.owner || _.contains(debate.invited, user._id));
     });
   }
 });

@@ -1,9 +1,9 @@
-angular.module('stream').filter('displayName', function () {
+angular.module('debateStream').filter('displayName', function () {
   return function (user) {
     if (!user) {
       return '';
     }
-
+ 
     if (user.profile && user.profile.name) {
       return user.profile.name;
     }
